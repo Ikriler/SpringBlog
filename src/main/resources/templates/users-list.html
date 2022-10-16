@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Пользователи</title>
+</head>
+<body>
+<a href="/">На главную</a>
+<form>
+    <input placeholder="Логин" name="login">
+    <label>точный поиск</label><input type="checkbox" name="accurate">
+    <input value="Поиск" formmethod="get" formaction="/user/list" type="submit">
+</form>
+<div th:each="user : ${users}">
+    <p th:text="${user.login}"></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Блог</title>
+</head>
+<body>
+<div th:if="${auth}">
+    <a href="/logout">Выйти</a>
+</div>
+<div th:unless="${auth}">
+    <a href="/login">Войти</a>
+</div>
+<a href="/register-form">Регистрация</a>
+<br>
+<div th:if="${auth}">
+    <a href="/user/list">Пользователи</a>
+    <a href="/add-post">Добавить статью</a>
+</div>
+<form>
+    <input placeholder="заголовок статьи" name="title">
+    <label>точный поиск</label><input type="checkbox" name="accurate">
+    <input value="Поиск" formmethod="get" formaction="/" type="submit">
+</form>
+<p>Список статей</p>
+<div th:each="post : ${posts}">
+    <a th:href="@{/list?id={id}(id=${post.id})}">
+        <h3 th:text="${post.title}"></h3>
+        <p th:text="${post.anons}"></p>
+    </a>
+</div>
+</body>
+</html>
