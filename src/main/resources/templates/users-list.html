@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Пользователи</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.css}">
 </head>
 <body>
 <a href="/">На главную</a>
@@ -12,7 +13,8 @@
     <input value="Поиск" formmethod="get" formaction="/user/list" type="submit">
 </form>
 <div th:each="user : ${users}">
-    <p th:text="${user.login}"></p>
+    <a th:href="@{/profile?id={id}(id=${user.id})}"><p th:text="${user.login}"></p></a>
 </div>
+<script th:src="@{/bootstrap/bootstrap.js}"></script>
 </body>
 </html>

@@ -9,4 +9,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     Iterable<User> findByLoginContains(String title);
 
+    Boolean existsByLogin(String login);
+
 }

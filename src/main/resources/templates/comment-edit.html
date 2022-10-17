@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/bootstrap.css}">
+</head>
+<body>
+<form>
+    <input type="hidden" th:value="${comment.id}" name="id">
+  <textarea name="text" th:text="${comment.text}">
+    </textarea><br>
+  <input type="submit" formaction="/comment/edit" formmethod="post">
+</form>
+<script th:src="@{/bootstrap/bootstrap.js}"></script>
+</body>
+</html>

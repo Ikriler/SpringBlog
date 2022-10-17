@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.css}">
+</head>
+<body>
+<a href="/">На главную</a>
+<div th:if="${current_user}">
+    <form action="/user/edit-page" method="post">
+        <input type="hidden" th:value="${user.id}" name="id">
+        <input type="submit" value="Редактировать">
+    </form>
+    <form action="/user/delete" method="post">
+        <input type="hidden" th:value="${user.id}" name="id">
+        <input type="submit" value="Удалить">
+    </form>
+</div>
+<div>
+  <p th:text="${user.login}"></p>
+  <label>Возраст:</label><span th:text="${user.age}"></span><br>
+  <label>Рост:</label><span th:text="${user.growth}"></span><br>
+  <label>Дата рождения:</label><span th:text="${user.bd_date}"></span><br>
+</div>
+<script th:src="@{/bootstrap/bootstrap.js}"></script>
+</body>
+</html>

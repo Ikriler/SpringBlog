@@ -15,14 +15,33 @@ public class Post {
 
     private int views;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "post_id")
-    private List<Comment> commentList = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name="user_id", referencedColumnName = "id")
+    private User user;
 
-    public Post(String title, String anons, String full_text) {
+    public Post(String title, String anons, String full_text, User user) {
         this.title = title;
         this.anons = anons;
         this.full_text = full_text;
+        this.user = user;
+    }
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Comment> commentList;
+
+    public List<Comment> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<Comment> commentList) {
+        this.commentList = commentList;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Post() {}
@@ -67,11 +86,4 @@ public class Post {
         this.views = views;
     }
 
-    public List<Comment> getCommentList() {
-        return this.commentList;
-    }
-
-    public void setCommentList(List<Comment> commentList) {
-        this.commentList = commentList;
-    }
 }

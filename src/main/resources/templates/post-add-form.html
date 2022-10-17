@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.css}">
 </head>
 <body>
 <a href="/">На главную</a>
@@ -12,5 +13,6 @@
     <label>Содержание</label><textarea name="full_text"></textarea><br>
     <input type="submit" value="Создать статью">
 </form>
+<script th:src="@{/bootstrap/bootstrap.js}"></script>
 </body>
 </html>

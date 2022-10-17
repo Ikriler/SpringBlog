@@ -20,20 +20,18 @@ public class User {
 
     private int age;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
-    private List<Post> postList = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
-    private List<Comment> commentList = new ArrayList<>();
-
     private Double growth;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date bd_date;
 
     private Boolean admin;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Comment> commentList;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Post> postList;
 
     public User(String login, String password, int age, Double growth, Date bd_date, Boolean admin) {
         this.login = login;
@@ -103,19 +101,20 @@ public class User {
         this.admin = admin;
     }
 
+    public List<Comment> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<Comment> commentList) {
+        this.commentList = commentList;
+    }
+
     public List<Post> getPostList() {
-        return this.postList;
+        return postList;
     }
 
     public void setPostList(List<Post> postList) {
         this.postList = postList;
     }
 
-    public List<Comment> getCommentList() {
-        return this.commentList;
-    }
-
-    public void setCommentList(List<Comment> commentList) {
-        this.commentList = commentList;
-    }
 }

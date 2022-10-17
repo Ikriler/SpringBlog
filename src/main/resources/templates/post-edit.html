@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.css}">
+</head>
+<body>
+<a href="/">На главную</a>
+<a th:href="@{/list?id={id}(id=${post.id})}">Назад</a>
+<form action="/post/edit" method="post">
+    <input type="hidden" name="id" th:value="${post.id}">
+    <label>Заголовок</label><input type="text" name="title" th:value="${post.title}"><br>
+    <label>Анонс</label><input type="text" name="anons" th:value="${post.anons}"><br>
+    <label>Содержание</label><textarea name="full_text" th:text="${post.full_text}"></textarea><br>
+    <input type="submit" value="Сохранить">
+</form>
+<script th:src="@{/bootstrap/bootstrap.js}"></script>
+</body>
+</html>

@@ -29,22 +29,56 @@ public class CommentController {
     public String createComment(@RequestParam long post_id, @RequestParam String text, Model model){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        if(authentication == null) {
+            return "redirect:/login";
+        }
+
         User user = userRepository.findByLogin(authentication.getName());
 
         Post post = postRepository.findById(post_id).get();
 
-        Comment comment = new Comment(text, new Date(), false, 0, 0.0);
+        Comment comment = new Comment(text.trim(), new Date(), false, 0, 0.0, user, post);
 
         commentRepository.save(comment);
 
-        user.getCommentList().add(comment);
-
-        userRepository.save(user);
-
-        post.getCommentList().add(comment);
-
-        postRepository.save(post);
-
         return "redirect:/list?id="+String.valueOf(post_id);
+    }
+
+    @PostMapping("comment/delete")
+    public String commentDelete(@RequestParam long post_id,
+                                @RequestParam long comment_id,
+                                Model model) {
+
+        Comment comment = commentRepository.findById(comment_id).get();
+
+        commentRepository.delete(comment);
+
+        return "redirect:/list?id="+post_id;
+    }
+
+
+    @PostMapping("comment/page-edit")
+    public String goCommentEdit(@RequestParam long comment_id,
+                                Model model) {
+
+        Comment comment = commentRepository.findById(comment_id).get();
+
+        model.addAttribute("comment", comment);
+
+        return "comment-edit";
+    }
+
+    @PostMapping("/comment/edit")
+    public String commentEdit(@RequestParam long id,
+                              @RequestParam String text,
+                              Model model) {
+
+        Comment comment = commentRepository.findById(id).get();
+
+        comment.setText(text);
+
+        commentRepository.save(comment);
+
+        return "redirect:/list?id=" + comment.getPost().getId();
     }
 }

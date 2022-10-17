@@ -30,7 +30,10 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/register-form", "/user-create").permitAll()
+                .antMatchers("/", "/register-form", "/user-create", "/bootstrap/bootstrap.js").permitAll()
+                .antMatchers("/resources/**").permitAll()
+                .antMatchers("/bootstrap/bootstrap.css").permitAll()
+                .antMatchers("/list").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .rememberMe()
@@ -41,7 +44,9 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/user-create");
+        return (web) ->     web
+                .ignoring()
+                .antMatchers("/resources/**", "/static/**","/static/bootstrap/**", "/css/**", "/js/**", "/img/**", "/icon/**", "/user-create");
     }
 
     @Bean

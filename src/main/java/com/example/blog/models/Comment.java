@@ -17,16 +17,26 @@ public class Comment {
 
     private Boolean hide;
 
+    @ManyToOne
+    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    private Post post;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
     private int likeRate;
 
     private Double cringeStatus;
 
-    public Comment(String text, Date dateTime, Boolean hide, int likeRate, Double cringeStatus) {
+    public Comment(String text, Date dateTime, Boolean hide, int likeRate, Double cringeStatus, User user, Post post) {
         this.text = text;
         this.dateTime = dateTime;
         this.hide = hide;
         this.likeRate = likeRate;
         this.cringeStatus = cringeStatus;
+        this.user = user;
+        this.post = post;
     }
 
     public Comment() {}
@@ -77,5 +87,21 @@ public class Comment {
 
     public void setCringeStatus(Double cringeStatus) {
         this.cringeStatus = cringeStatus;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

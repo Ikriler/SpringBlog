@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.css}">
+</head>
+<body>
+<a href="/">На главную</a>
+<form action="/user/edit" method="post">
+    <input type="hidden" name="id" th:value="${user.id}">
+  <label>Пароль</label><input type="text"  name="password" th:value="${user.password}"><br>
+  <label>Возраст</label><input type="number" name="age" th:value="${user.age}"><br>
+  <label>Рост</label><input type="number" step="0.01" name="growth" th:value="${user.growth}"><br>
+  <label>Дата рождения</label><input type="date" name="bd_date" th:value="${outDate}"><br>
+  <input value="Подтвердить" type="submit">
+</form>
+<script th:src="@{/bootstrap/bootstrap.js}"></script>
+</body>
+</html>

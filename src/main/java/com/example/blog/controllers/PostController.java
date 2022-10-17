@@ -36,37 +36,94 @@ public class PostController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByLogin(auth.getName());
 
-        Post post = new Post(title, anons, full_text);
+        Post post = new Post(title, anons, full_text, user);
 
         postRepository.save(post);
-
-        user.getPostList().add(post);
-
-        userRepository.save(user);
 
         return "redirect:/";
     }
 
     @GetMapping("/list")
     public String getOnePost(@RequestParam(required = false) String text, @RequestParam(required = false) Boolean accurate, @RequestParam long id, Model model) {
-        Optional<Post> post = postRepository.findById(id);
+        Post post = postRepository.findById(id).get();
 
-        List<Comment> commentList = post.get().getCommentList();
+        User user = new User();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth != null && auth.getName() != "anonymousUser") {
+            user = userRepository.findByLogin(auth.getName());
+        }
+        else {
+            user.setId(-1);
+        }
+
+        if(post.getUser().equals(user)) {
+            model.addAttribute("allowEdit", true);
+            model.addAttribute("allowDelete", true);
+        }
+        else {
+            model.addAttribute("allowEdit", false);
+            model.addAttribute("allowDelete", false);
+        }
+
+        List<Comment> commentList = commentRepository.findCommentByPost(post);
 
         Collections.reverse(commentList);
 
         if(text != null && text != "") {
             if(accurate != null && accurate == true) {
-                commentList = commentList.stream().filter(c -> text.trim().equals(c.getText().trim())).collect(Collectors.toList());
+                commentList = commentRepository.findCommentByPostAndTextOrderByDateTimeDesc(post, text.trim());
             }
             else {
-                commentList = commentList.stream().filter(c -> c.getText().contains(text)).collect(Collectors.toList());
+                //commentList = commentList.stream().filter(c -> c.getText().contains(text)).collect(Collectors.toList());
+                commentList = commentRepository.findCommentByPostAndTextContainsOrderByDateTimeDesc(post, text.trim());
             }
         }
 
         model.addAttribute("comments", commentList);
 
-        model.addAttribute("post", post.get());
+        model.addAttribute("post", post);
+
+        model.addAttribute("currentUser", user);
         return "one-post";
     }
+
+    @PostMapping("/post/edit")
+    public String editPost(@RequestParam String title,
+                           @RequestParam String anons,
+                           @RequestParam String full_text,
+                           @RequestParam long id,
+                           Model model) {
+
+        Post post = postRepository.findById(id).get();
+
+        post.setTitle(title);
+        post.setAnons(anons);
+        post.setFull_text(full_text);
+
+        postRepository.save(post);
+
+        return "redirect:/list?id="+String.valueOf(id);
+    }
+
+    @PostMapping("/post/page-edit")
+    public String goEditPost(@RequestParam long id,
+                           Model model) {
+
+        Post post = postRepository.findById(id).get();
+
+        model.addAttribute("post", post);
+
+        return "post-edit";
+    }
+
+    @PostMapping("/post/delete")
+    public String deletePost(@RequestParam long id, Model model){
+
+        Post post = postRepository.findById(id).get();
+
+        postRepository.delete(post);
+
+        return "redirect:/";
+    }
+
 }

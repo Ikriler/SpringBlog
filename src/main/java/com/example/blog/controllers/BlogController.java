@@ -23,7 +23,7 @@ public class BlogController {
     @GetMapping("/")
     public String index(@RequestParam(required = false) String title, @RequestParam(required = false) Boolean accurate, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth.getName() != "anonymousUser") {
+        if(auth != null && auth.getName() != "anonymousUser") {
             model.addAttribute("auth", true);
         }
         else {
