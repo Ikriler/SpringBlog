@@ -6,23 +6,50 @@
     <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.css}">
 </head>
 <body>
-<a href="/">На главную</a>
-<div th:if="${current_user}">
-    <form action="/user/edit-page" method="post">
-        <input type="hidden" th:value="${user.id}" name="id">
-        <input type="submit" value="Редактировать">
-    </form>
-    <form action="/user/delete" method="post">
-        <input type="hidden" th:value="${user.id}" name="id">
-        <input type="submit" value="Удалить">
-    </form>
-</div>
-<div>
-  <p th:text="${user.login}"></p>
-  <label>Возраст:</label><span th:text="${user.age}"></span><br>
-  <label>Рост:</label><span th:text="${user.growth}"></span><br>
-  <label>Дата рождения:</label><span th:text="${user.bd_date}"></span><br>
-</div>
+<nav class="nav navbar-expand-lg navbar-dark bg-dark p-3">
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item ms-3">
+                <a class="nav-link" href="/">Главная</a>
+            </li>
+            <li class="nav-item ms-3" th:if="${auth}">
+                <a class="nav-link" href="/user/list">Пользователи</a>
+            </li>
+            <li class="nav-item ms-3" th:if="${auth}">
+                <a class="nav-link" href="/add-post">Добавить статью</a>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <div th:if="${auth}">
+            <a href="/logout" class="btn btn-primary">Выйти</a>
+        </div>
+        <div th:unless="${auth}">
+            <a href="/login" class="btn btn-primary">Войти</a>
+            <a href="/register-form" class="btn btn-primary ms-2">Регистрация</a>
+        </div>
+    </div>
+</nav>
+<content class="container d-flex flex-column align-items-center mt-4">
+    <div>
+        <p th:text="${user.login}"></p>
+        <label>Возраст:</label><span th:text="${user.age}"></span><br>
+        <label>Рост:</label><span th:text="${user.growth}"></span><br>
+        <label>Дата рождения:</label><span th:text="${user.bd_date}"></span><br>
+    </div>
+    <div th:if="${current_user}" class="container mt-4 row d-flex flex-row align-items-center justify-content-center">
+        <div class="col-sm-4"></div>
+        <form action="/user/edit-page" method="post" class="col-sm-2">
+            <input type="hidden" th:value="${user.id}" name="id">
+            <input type="submit" value="Редактировать" class="btn btn-primary">
+        </form>
+        <form action="/user/delete" method="post" class="col-sm-1 ms-4">
+            <input type="hidden" th:value="${user.id}" name="id">
+            <input type="submit" value="Удалить" class="btn btn-primary">
+        </form>
+        <div class="col-sm-4"></div>
+    </div>
+</content>
 <script th:src="@{/bootstrap/bootstrap.js}"></script>
 </body>
 </html>

@@ -23,24 +23,21 @@ public class BlogController {
     @GetMapping("/")
     public String index(@RequestParam(required = false) String title, @RequestParam(required = false) Boolean accurate, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth != null && auth.getName() != "anonymousUser") {
+        if (auth != null && auth.getName() != "anonymousUser") {
             model.addAttribute("auth", true);
-        }
-        else {
+        } else {
             model.addAttribute("auth", false);
         }
 
         Iterable<Post> posts = new ArrayList<Post>();
 
-        if(title != null && title != "") {
-            if(accurate != null && accurate == true) {
+        if (title != null && title != "") {
+            if (accurate != null && accurate == true) {
                 posts = postRepository.findByTitle(title);
-            }
-            else {
+            } else {
                 posts = postRepository.findByTitleContains(title);
             }
-        }
-        else {
+        } else {
             posts = postRepository.findAll();
         }
         model.addAttribute("posts", posts);
@@ -48,9 +45,26 @@ public class BlogController {
     }
 
     @GetMapping("/register-form")
-    public String registerForm(Model model) { return "register-form";}
+    public String registerForm(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName() != "anonymousUser") {
+            model.addAttribute("auth", true);
+        } else {
+            model.addAttribute("auth", false);
+        }
+
+        return "register-form";
+    }
 
     @GetMapping("/add-post")
-    public String goPostAddForm(Model model) {return "post-add-form";}
+    public String goPostAddForm(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName() != "anonymousUser") {
+            model.addAttribute("auth", true);
+        } else {
+            model.addAttribute("auth", false);
+        }
+        return "post-add-form";
+    }
 
 }

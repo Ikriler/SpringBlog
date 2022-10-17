@@ -9,16 +9,74 @@
     <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.css}">
 </head>
 <body>
-    <p>Регистрация</p>
-    <form action="/user-create" method="post">
-        <label>Логин</label><input type="text" name="login"><br>
-        <label>Пароль</label><input type="text" name="password"><br>
-        <label>Возраст</label><input type="number" name="age"><br>
-        <label>Рост</label><input type="number" step="0.01" name="growth"><br>
-        <label>Дата рождения</label><input type="date" name="bd_date"><br>
-        <input value="Подтвердить" type="submit">
-        <a href="/">Назад</a>
+<nav class="nav navbar-expand-lg navbar-dark bg-dark p-3">
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item ms-3">
+                <a class="nav-link" href="/">Главная</a>
+            </li>
+            <li class="nav-item ms-3" th:if="${auth}">
+                <a class="nav-link" href="/user/list">Пользователи</a>
+            </li>
+            <li class="nav-item ms-3" th:if="${auth}">
+                <a class="nav-link" href="/add-post">Добавить статью</a>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <div th:if="${auth}">
+            <a href="/logout" class="btn btn-primary">Выйти</a>
+        </div>
+        <div th:unless="${auth}">
+            <a href="/login" class="btn btn-primary">Войти</a>
+            <a href="/register-form" class="btn btn-primary ms-2">Регистрация</a>
+        </div>
+    </div>
+</nav>
+<content class="container d-flex flex-column align-items-center mt-4">
+    <p class="display-5 p-4">Регистрация</p>
+    <form action="/user-create" method="post" class="form-horizontal col-sm-8">
+        <div>
+
+            <div class="form-group row mt-3">
+                <label class="col-sm-2 col-form-label">Логин</label>
+                <div class="col-sm-10">
+                    <input type="text" name="login" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group row mt-3">
+                <label class="col-sm-2 col-form-label">Пароль</label>
+                <div class="col-sm-10">
+                    <input type="text" name="password" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group row mt-3">
+                <label class="col-sm-2 col-form-label">Возраст</label>
+                <div class="col-sm-10">
+                    <input type="number" name="age" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group row mt-3">
+                <label class="col-sm-2 col-form-label">Рост</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="number" step="0.01" name="growth">
+                </div>
+            </div>
+
+            <div class="form-group row mt-3">
+                <label class="col-sm-2 col-form-label">Дата рождения</label>
+                <div class="col-sm-10">
+                    <input type="date" name="bd_date" class="form-control">
+                </div>
+            </div>
+
+            <input value="Подтвердить" type="submit" class="btn btn-primary mt-2">
+        </div>
     </form>
-    <script th:src="@{/bootstrap/bootstrap.js}"></script>
+</content>
+<script th:src="@{/bootstrap/bootstrap.js}"></script>
 </body>
 </html>

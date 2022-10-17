@@ -63,6 +63,13 @@ public class UserController {
             users = userRepository.findAll();
         }
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName() != "anonymousUser") {
+            model.addAttribute("auth", true);
+        } else {
+            model.addAttribute("auth", false);
+        }
+
         model.addAttribute("users", users);
 
         return "users-list";
@@ -78,7 +85,7 @@ public class UserController {
         model.addAttribute("user", user);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth.getName() != "anonymousUser") {
+        if(auth != null && auth.getName() != "anonymousUser") {
             User currentUser = userRepository.findByLogin(auth.getName());
             if(currentUser.getId() == user.getId()) {
                 model.addAttribute("current_user", true);
@@ -86,10 +93,13 @@ public class UserController {
             else {
                 model.addAttribute("current_user", false);
             }
+            model.addAttribute("auth", true);
         }
         else {
             model.addAttribute("current_user", false);
+            model.addAttribute("auth", false);
         }
+
 
         return "profile";
     }
@@ -116,6 +126,13 @@ public class UserController {
         SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
 
         String outDate = dt1.format(date);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName() != "anonymousUser") {
+            model.addAttribute("auth", true);
+        } else {
+            model.addAttribute("auth", false);
+        }
 
         model.addAttribute("user", user);
         model.addAttribute("outDate", outDate);

@@ -6,12 +6,40 @@
     <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/bootstrap.css}">
 </head>
 <body>
-<form>
-    <input type="hidden" th:value="${comment.id}" name="id">
-  <textarea name="text" th:text="${comment.text}">
+<nav class="nav navbar-expand-lg navbar-dark bg-dark p-3">
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item ms-3">
+                <a class="nav-link" href="/">Главная</a>
+            </li>
+            <li class="nav-item ms-3" th:if="${auth}">
+                <a class="nav-link" href="/user/list">Пользователи</a>
+            </li>
+            <li class="nav-item ms-3" th:if="${auth}">
+                <a class="nav-link" href="/add-post">Добавить статью</a>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <div th:if="${auth}">
+            <a href="/logout" class="btn btn-primary">Выйти</a>
+        </div>
+        <div th:unless="${auth}">
+            <a href="/login" class="btn btn-primary">Войти</a>
+            <a href="/register-form" class="btn btn-primary ms-2">Регистрация</a>
+        </div>
+    </div>
+</nav>
+<content class="container d-flex flex-column align-items-center mt-4">
+    <form class="form-horizontal col-sm-8">
+        <div>
+            <input type="hidden" th:value="${comment.id}" name="id">
+            <textarea name="text" th:text="${comment.text}" class="form-control">
     </textarea><br>
-  <input type="submit" formaction="/comment/edit" formmethod="post">
-</form>
+            <input type="submit" value="Сохранить" formaction="/comment/edit" formmethod="post" class="btn btn-primary mt-2">
+        </div>
+    </form>
+</content>
 <script th:src="@{/bootstrap/bootstrap.js}"></script>
 </body>
 </html>

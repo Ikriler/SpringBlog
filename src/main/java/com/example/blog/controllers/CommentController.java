@@ -61,6 +61,14 @@ public class CommentController {
     public String goCommentEdit(@RequestParam long comment_id,
                                 Model model) {
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth != null && auth.getName() != "anonymousUser") {
+            model.addAttribute("auth", true);
+        }
+        else {
+            model.addAttribute("auth", false);
+        }
+
         Comment comment = commentRepository.findById(comment_id).get();
 
         model.addAttribute("comment", comment);

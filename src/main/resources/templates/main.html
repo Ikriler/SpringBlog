@@ -9,7 +9,6 @@
     <title>Блог</title>
 </head>
 <body>
-
 <nav class="nav navbar-expand-lg navbar-dark bg-dark p-3">
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
@@ -34,19 +33,33 @@
         </div>
     </div>
 </nav>
-
-<form>
-    <input placeholder="заголовок статьи" name="title">
-    <label>точный поиск</label><input type="checkbox" name="accurate">
-    <input value="Поиск" formmethod="get" formaction="/" type="submit">
-</form>
-<p>Список статей</p>
-<div th:each="post : ${posts}">
-    <a th:href="@{/list?id={id}(id=${post.id})}">
-        <h3 th:text="${post.title}"></h3>
-        <p th:text="${post.anons}"></p>
-    </a>
-</div>
+<content class="container d-flex flex-column align-items-center mt-4">
+    <form class="form-horizontal col-sm-8">
+        <div class="form-group row d-flex flex-row align-items-center justify-content-center">
+            <div class="col-sm-6">
+                <input placeholder="заголовок статьи" class="form-control" name="title">
+            </div>
+            <div class="col-sm-2 col-form-label">
+                <label class="form-check-label">точный поиск</label>
+            </div>
+            <div class="col-sm-1 col-form-label">
+                <input type="checkbox" name="accurate" class="form-check-input">
+            </div>
+            <div class="col-sm-3">
+                <input value="Поиск" formmethod="get" formaction="/" type="submit" class="btn btn-primary col-sm-12">
+            </div>
+        </div>
+    </form>
+    <p class="display-5 p-4">Список статей</p>
+</content>
+<content class="container d-flex flex-column align-items-right mt-4 col-sm-5">
+    <div th:each="post : ${posts}">
+        <a th:href="@{/list?id={id}(id=${post.id})}">
+            <h3 th:text="${post.title}"></h3>
+            <p th:text="${post.anons}"></p>
+        </a>
+    </div>
+</content>
 <script th:src="@{/bootstrap/bootstrap.js}"></script>
 </body>
 </html>

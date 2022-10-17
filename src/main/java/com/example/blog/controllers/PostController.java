@@ -51,9 +51,11 @@ public class PostController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth != null && auth.getName() != "anonymousUser") {
             user = userRepository.findByLogin(auth.getName());
+            model.addAttribute("auth", true);
         }
         else {
             user.setId(-1);
+            model.addAttribute("auth", false);
         }
 
         if(post.getUser().equals(user)) {
@@ -108,6 +110,14 @@ public class PostController {
     @PostMapping("/post/page-edit")
     public String goEditPost(@RequestParam long id,
                            Model model) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth != null && auth.getName() != "anonymousUser") {
+            model.addAttribute("auth", true);
+        }
+        else {
+            model.addAttribute("auth", false);
+        }
 
         Post post = postRepository.findById(id).get();
 
