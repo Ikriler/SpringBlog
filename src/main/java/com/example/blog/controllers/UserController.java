@@ -60,7 +60,7 @@ public class UserController {
 
         userRepository.save(userDB);
 
-        return "/";
+        return "redirect:/";
     }
 
     @GetMapping("/user/list")
