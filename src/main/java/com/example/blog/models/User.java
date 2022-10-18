@@ -1,6 +1,9 @@
 package com.example.blog.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,16 +16,29 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+
     @Column(unique = true)
     private String login;
 
+    @NotBlank(message = "Поле не должно быть пустым")
+    @Size(min = 6, max = 20, message = "Поле должно быть размером от 6 до 20 символов")
     private String password;
 
+
+    @Positive(message = "Возраст не может быть отрицательным")
+    @Min(value = 15, message = "Вам должно быть не менее 15 лет")
+    @Max(value = 200, message = "Вы должно быть не более 200 лет")
     private int age;
 
+    @DecimalMin(value = "0.0", message = "Рост должен быть больше 0")
+    @DecimalMax(value = "200.0", message = "Рост должен быть меньше 200")
+    @Positive(message = "Рост не может быть отрицательным")
     private Double growth;
 
-    @Temporal(TemporalType.TIMESTAMP)
+
+    @Temporal(TemporalType.DATE)
+    @Past(message = "Дата должна быть меньше сегодняшней")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date bd_date;
 
     private Boolean admin;

@@ -38,7 +38,8 @@ public class SecurityConfig {
                 .and()
                 .rememberMe()
                 .and()
-                .formLogin();
+                .formLogin()
+                .defaultSuccessUrl("/");
         return http.build();
     }
 

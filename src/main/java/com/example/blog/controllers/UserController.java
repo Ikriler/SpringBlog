@@ -12,18 +12,16 @@ import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Past;
 import java.net.PasswordAuthentication;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class UserController {
@@ -33,15 +31,34 @@ public class UserController {
 
 
     @PostMapping("/user-create")
-    public String create(@RequestParam String login,
-                         @RequestParam String password,
-                         @RequestParam int age,
-                         @RequestParam Double growth,
-                         @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date bd_date,
+    public String create(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
                          Model model) {
-        User user = new User(login, password, age, growth, bd_date, false);
 
-        userRepository.save(user);
+        List<String> loginErrors = new ArrayList<>();
+
+        if(userRepository.findByLogin(user.getLogin()) != null) {
+            ObjectError error = new ObjectError("login", "Логин уже существует");
+            bindingResult.addError(error);
+            loginErrors.add("Логин уже существует");
+        }
+
+        if(user.getLogin().trim().length() < 6 || user.getLogin().trim().length() > 20 ) {
+            ObjectError error = new ObjectError("login", "Поле логин должно содержать от 6 до 20 символов");
+            bindingResult.addError(error);
+            loginErrors.add("Поле логин должно содержать от 6 до 20 символов");
+        }
+
+        if(loginErrors.size() != 0) {
+            model.addAttribute("loginErrors", loginErrors);
+        }
+
+        if(bindingResult.hasErrors()) {
+            return "register-form";
+        }
+
+        User userDB = new User(user.getLogin(), user.getPassword(), user.getAge(), user.getGrowth(), user.getBd_date(), false);
+
+        userRepository.save(userDB);
 
         return "/";
     }
@@ -51,15 +68,13 @@ public class UserController {
 
         Iterable<User> users = new ArrayList<User>();
 
-        if(login != null && login != "") {
-            if(accurate != null && accurate == true) {
+        if (login != null && login != "") {
+            if (accurate != null && accurate == true) {
                 ((ArrayList<User>) users).add(userRepository.findByLogin(login));
-            }
-            else {
+            } else {
                 users = userRepository.findByLoginContains(login);
             }
-        }
-        else {
+        } else {
             users = userRepository.findAll();
         }
 
@@ -77,7 +92,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public String profile(@RequestParam long id, Model model) {
-        if(!userRepository.existsById(id)) {
+        if (!userRepository.existsById(id)) {
             return "redirect:/";
         }
         User user = userRepository.findById(id).get();
@@ -85,17 +100,15 @@ public class UserController {
         model.addAttribute("user", user);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth != null && auth.getName() != "anonymousUser") {
+        if (auth != null && auth.getName() != "anonymousUser") {
             User currentUser = userRepository.findByLogin(auth.getName());
-            if(currentUser.getId() == user.getId()) {
+            if (currentUser.getId() == user.getId()) {
                 model.addAttribute("current_user", true);
-            }
-            else {
+            } else {
                 model.addAttribute("current_user", false);
             }
             model.addAttribute("auth", true);
-        }
-        else {
+        } else {
             model.addAttribute("current_user", false);
             model.addAttribute("auth", false);
         }
@@ -116,7 +129,7 @@ public class UserController {
 
     @PostMapping("user/edit-page")
     public String goEditPage(@RequestParam long id, Model model) {
-        if(!userRepository.existsById(id)) {
+        if (!userRepository.existsById(id)) {
             return "redirect:/";
         }
         User user = userRepository.findById(id).get();
@@ -141,23 +154,35 @@ public class UserController {
     }
 
     @PostMapping("user/edit")
-    public String userEdit(@RequestParam long id,
-                           @RequestParam String password,
-                           @RequestParam int age,
-                           @RequestParam Double growth,
-                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date bd_date,
+    public String userEdit(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
                            Model model) {
 
-        User user = userRepository.findById(id).get();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName() != "anonymousUser") {
+            model.addAttribute("auth", true);
+        } else {
+            model.addAttribute("auth", false);
+        }
 
-        user.setPassword(password);
-        user.setAge(age);
-        user.setGrowth(growth);
-        user.setBd_date(bd_date);
+        SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
 
-        userRepository.save(user);
+        String outDate = dt1.format(user.getBd_date());
 
-        return "redirect:/profile?id="+String.valueOf(id);
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("outDate", outDate);
+            return "user-edit";
+        }
+
+        User userBD = userRepository.findById(user.getId()).get();
+
+        userBD.setPassword(user.getPassword());
+        userBD.setAge(user.getAge());
+        userBD.setGrowth(user.getGrowth());
+        userBD.setBd_date(user.getBd_date());
+
+        userRepository.save(userBD);
+
+        return "redirect:/profile?id=" + String.valueOf(userBD.getId());
     }
 
 }

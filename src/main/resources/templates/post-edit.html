@@ -31,29 +31,32 @@
     </div>
 </nav>
 <content class="container d-flex flex-column align-items-center mt-4">
-    <form action="/post/edit" method="post" class="form-horizontal col-sm-8">
+    <form action="/post/edit" method="post" class="form-horizontal col-sm-8" th:object="${post}">
         <div>
-            <input type="hidden" name="id" th:value="${post.id}">
+            <input type="hidden" th:value="${post.id}" th:field="*{id}">
 
             <div class="form-group row mt-3">
                 <label class="col-sm-2 col-form-label">Заголовок</label>
                 <div class="col-sm-10">
-                    <input class="form-control" type="text" name="title" th:value="${post.title}">
+                    <input class="form-control" type="text" th:value="${post.title}" th:field="*{title}">
                 </div>
+                <span class="error text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
             </div>
 
             <div class="form-group row mt-3">
                 <label class="col-sm-2 col-form-label">Анонс</label>
                 <div class="col-sm-10">
-                    <input class="form-control" type="text" name="anons" th:value="${post.anons}">
+                    <input class="form-control" type="text" th:value="${post.anons}" th:field="*{anons}">
                 </div>
+                <span class="error text-danger" th:if="${#fields.hasErrors('anons')}" th:errors="*{anons}"></span>
             </div>
 
             <div class="form-group row mt-3">
                 <label class="col-sm-2 col-form-label">Содержание</label>
                 <div class="col-sm-10">
-                    <textarea class="form-control" name="full_text" th:text="${post.full_text}"></textarea>
+                    <textarea class="form-control" th:text="${post.full_text}" th:field="*{full_text}"></textarea>
                 </div>
+                <span class="error text-danger" th:if="${#fields.hasErrors('full_text')}" th:errors="*{full_text}"></span>
             </div>
 
             <input type="submit" value="Сохранить" class="btn btn-primary mt-2">

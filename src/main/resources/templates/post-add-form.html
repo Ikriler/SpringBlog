@@ -31,25 +31,28 @@
     </div>
 </nav>
 <content class="container d-flex flex-column align-items-center mt-4">
-    <form action="/post-create" method="post" class="form-horizontal col-sm-8">
+    <form action="/post-create" th:object="${post}" method="post" class="form-horizontal col-sm-8">
         <div>
             <div class="form-group row mt-3">
                 <label class="col-sm-2 col-form-label">Заголовок</label>
                 <div class="col-sm-10">
-                    <input type="text" name="title" class="form-control"/>
+                    <input type="text" th:field="*{title}" class="form-control"/>
                 </div>
+                <span class="error text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
             </div>
             <div class="form-group row mt-3">
                 <label class="col-sm-2 col-form-label">Анонс</label>
                 <div class="col-sm-10">
-                    <input type="text" name="anons" class="form-control"/>
+                    <input type="text" th:field="*{anons}" class="form-control"/>
                 </div>
+                <span class="error text-danger" th:if="${#fields.hasErrors('anons')}" th:errors="*{anons}"></span>
             </div>
             <div class="form-group row mt-3">
                 <label class="col-sm-2 col-form-label">Содержание</label>
                 <div class="col-sm-10">
-                    <textarea name="full_text" class="form-control"></textarea>
+                    <textarea th:field="*{full_text}" class="form-control"></textarea>
                 </div>
+                <span class="error text-danger" th:if="${#fields.hasErrors('full_text')}" th:errors="*{full_text}"></span>
             </div>
             <input type="submit" value="Создать статью" class="btn btn-primary mt-2">
         </div>

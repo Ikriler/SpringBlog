@@ -1,8 +1,10 @@
 package com.example.blog.controllers;
 
 import com.example.blog.models.Post;
+import com.example.blog.models.User;
 import com.example.blog.repositories.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -41,6 +44,7 @@ public class BlogController {
             posts = postRepository.findAll();
         }
         model.addAttribute("posts", posts);
+
         return "main";
     }
 
@@ -53,6 +57,10 @@ public class BlogController {
             model.addAttribute("auth", false);
         }
 
+        User user = new User();
+        user.setBd_date(new Date());
+        user.setGrowth(170.0);
+        model.addAttribute("user", user);
         return "register-form";
     }
 
@@ -64,6 +72,7 @@ public class BlogController {
         } else {
             model.addAttribute("auth", false);
         }
+        model.addAttribute("post", new Post());
         return "post-add-form";
     }
 

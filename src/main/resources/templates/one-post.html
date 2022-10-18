@@ -58,13 +58,15 @@
 
     <hr>
 
-    <form>
+    <form th:object="${comment}">
         <p>Написать комментарий</p>
-        <input type="hidden" th:value="${post.id}" name="post_id">
-        <textarea name="text" class="form-control"></textarea><br>
-        <input type="submit" formaction="/create-comment" formmethod="post" class="btn btn-primary">
+        <div>
+            <input type="hidden" th:value="${post.id}" name="post_id">
+            <textarea th:field="*{text}" class="form-control"></textarea><br>
+            <span class="error text-danger" th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></span>
+        </div>
+        <input type="submit" formaction="/create-comment" formmethod="post" class="btn btn-primary mt-2">
     </form>
-
 
     <br>
 

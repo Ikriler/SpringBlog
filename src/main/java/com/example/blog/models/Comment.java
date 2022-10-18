@@ -1,6 +1,7 @@
 package com.example.blog.models;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.Date;
 
 @Entity
@@ -9,7 +10,9 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-
+    @NotNull
+    @NotEmpty(message = "Поле не должно быть пустым")
+    @Size(min = 10, max = 200, message = "Размер комментария должен быть от 10 до 200 символов")
     private String text;
 
     @Temporal(TemporalType.TIMESTAMP)

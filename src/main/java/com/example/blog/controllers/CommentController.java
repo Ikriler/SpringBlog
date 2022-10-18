@@ -6,14 +6,20 @@ import com.example.blog.models.User;
 import com.example.blog.repositories.CommentRepository;
 import com.example.blog.repositories.PostRepository;
 import com.example.blog.repositories.UserRepository;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.Date;
 
 @Controller
@@ -26,20 +32,27 @@ public class CommentController {
     private PostRepository postRepository;
 
     @PostMapping("/create-comment")
-    public String createComment(@RequestParam long post_id, @RequestParam String text, Model model){
+    public String createComment(@ModelAttribute("comment") @Valid Comment comment, BindingResult bindingResult, @RequestParam long post_id, Model model, HttpSession session){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if(authentication == null) {
             return "redirect:/login";
         }
 
+        if(bindingResult.hasErrors()) {
+            session.setAttribute("org.springframework.validation.BindingResult.comment", bindingResult);
+            session.setAttribute("comment", comment);
+            session.setAttribute("flash", true);
+            return "redirect:/list?id="+String.valueOf(post_id);
+        }
+
         User user = userRepository.findByLogin(authentication.getName());
 
         Post post = postRepository.findById(post_id).get();
 
-        Comment comment = new Comment(text.trim(), new Date(), false, 0, 0.0, user, post);
+        Comment commentDB = new Comment(comment.getText().trim(), new Date(), false, 0, 0.0, user, post);
 
-        commentRepository.save(comment);
+        commentRepository.save(commentDB);
 
         return "redirect:/list?id="+String.valueOf(post_id);
     }
@@ -73,20 +86,32 @@ public class CommentController {
 
         model.addAttribute("comment", comment);
 
+
         return "comment-edit";
     }
 
     @PostMapping("/comment/edit")
-    public String commentEdit(@RequestParam long id,
-                              @RequestParam String text,
+    public String commentEdit(@ModelAttribute("comment") @Valid Comment comment, BindingResult bindingResult,
                               Model model) {
 
-        Comment comment = commentRepository.findById(id).get();
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("comment_id", comment.getId());
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if(auth != null && auth.getName() != "anonymousUser") {
+                model.addAttribute("auth", true);
+            }
+            else {
+                model.addAttribute("auth", false);
+            }
+            return "comment-edit";
+        }
 
-        comment.setText(text);
+        Comment commentDB = commentRepository.findById(comment.getId()).get();
 
-        commentRepository.save(comment);
+        commentDB.setText(comment.getText());
 
-        return "redirect:/list?id=" + comment.getPost().getId();
+        commentRepository.save(commentDB);
+
+        return "redirect:/list?id=" + commentDB.getPost().getId();
     }
 }
