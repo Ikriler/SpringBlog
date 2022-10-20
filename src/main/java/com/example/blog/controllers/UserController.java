@@ -70,7 +70,8 @@ public class UserController {
 
         if (login != null && login != "") {
             if (accurate != null && accurate == true) {
-                ((ArrayList<User>) users).add(userRepository.findByLogin(login));
+                if(userRepository.findByLogin(login) != null)
+                users = Arrays.asList(userRepository.findByLogin(login));
             } else {
                 users = userRepository.findByLoginContains(login);
             }
@@ -84,6 +85,7 @@ public class UserController {
         } else {
             model.addAttribute("auth", false);
         }
+
 
         model.addAttribute("users", users);
 
@@ -166,6 +168,7 @@ public class UserController {
 
         SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
 
+        if(user.getBd_date() == null) user.setBd_date(new Date());
         String outDate = dt1.format(user.getBd_date());
 
         if (bindingResult.hasErrors()) {

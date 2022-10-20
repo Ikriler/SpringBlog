@@ -37,6 +37,7 @@ public class User {
 
 
     @Temporal(TemporalType.DATE)
+    @NotNull(message = "Дата не должна быть пустой")
     @Past(message = "Дата должна быть меньше сегодняшней")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date bd_date;
