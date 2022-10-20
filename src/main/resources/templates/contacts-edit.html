@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.css}">
+</head>
+<body>
+<nav class="nav navbar-expand-lg navbar-dark bg-dark p-3">
+  <div class="collapse navbar-collapse">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item ms-3">
+        <a class="nav-link" href="/">Главная</a>
+      </li>
+      <li class="nav-item ms-3" th:if="${auth}">
+        <a class="nav-link" href="/user/list">Пользователи</a>
+      </li>
+      <li class="nav-item ms-3" th:if="${auth}">
+        <a class="nav-link" href="/add-post">Добавить статью</a>
+      </li>
+    </ul>
+  </div>
+  <div>
+    <div th:if="${auth}">
+      <a href="/logout" class="btn btn-primary">Выйти</a>
+    </div>
+    <div th:unless="${auth}">
+      <a href="/login" class="btn btn-primary">Войти</a>
+      <a href="/register-form" class="btn btn-primary ms-2">Регистрация</a>
+    </div>
+  </div>
+</nav>
+
+<content class="container d-flex flex-column align-items-center mt-4">
+  <form  action="/contacts/create" th:object="${contacts}" method="post" class="form-horizontal col-sm-8">
+    <input type="hidden" th:field="*{id}" th:value="${contacts.id}">
+    <input type="hidden" th:field="*{user}" th:value="${contacts.user}">
+
+    <div class="form-group row mt-3">
+      <label class="col-sm-2 col-form-label">Email: </label>
+      <div class="col-sm-10">
+        <input type="email" class="form-control" th:field="*{email}" th:value="${contacts.email}">
+      </div>
+      <span class="error text-danger" th:if="${email_errors != null}" th:text="${email_errors}"></span>
+      <span class="error text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+    </div>
+
+    <div class="form-group row mt-3">
+      <label class="col-sm-2 col-form-label">Номер телефона: </label>
+      <div class="col-sm-10">
+        <input type="number" th:field="*{phoneNumber}"  th:value="${contacts.phoneNumber}" class="form-control" >
+      </div>
+      <span class="error text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></span>
+      <span class="error text-danger" th:if="${phoneNumber_errors != null}" th:text="${phoneNumber_errors}"></span>
+    </div>
+
+    <input value="Сохранить" type="submit" class="btn btn-primary mt-2">
+  </form>
+</content>
+
+
+<script th:src="@{/bootstrap/bootstrap.js}"></script>
+</body>
+</html>

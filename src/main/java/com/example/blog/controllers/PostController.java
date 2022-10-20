@@ -7,16 +7,20 @@ import com.example.blog.repositories.CommentRepository;
 import com.example.blog.repositories.PostRepository;
 import com.example.blog.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -79,6 +83,10 @@ public class PostController {
         else {
             model.addAttribute("allowEdit", false);
             model.addAttribute("allowDelete", false);
+        }
+
+        if(post.getUserEditorsList().contains(user)) {
+            model.addAttribute("allowEdit", true);
         }
 
         List<Comment> commentList = commentRepository.findCommentByPost(post);
@@ -170,6 +178,64 @@ public class PostController {
         postRepository.delete(post);
 
         return "redirect:/";
+    }
+
+    @GetMapping("/post/goEditorPage")
+    public String goEditorPage(@RequestParam long id, Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth != null && auth.getName() != "anonymousUser") {
+            model.addAttribute("auth", true);
+        }
+        else {
+            model.addAttribute("auth", false);
+        }
+
+        if(!postRepository.existsById(id) || !postRepository.findById(id).get().getUser().getLogin().equals(auth.getName())) {
+            return "redirect:/login";
+        }
+
+        Post post = postRepository.findById(id).get();
+
+        User currentUser = userRepository.findByLogin(auth.getName());
+
+
+        List<User> editors = post.getUserEditorsList();
+        List<User> users = (List<User>) userRepository.findAll();
+
+        users.removeAll(editors);
+        users.remove(currentUser);
+
+        model.addAttribute("users", users);
+        model.addAttribute("editors", editors);
+        model.addAttribute("post_id", id);
+
+        return "editor-add-page";
+    }
+
+    @PostMapping("/post/addEditor")
+    public String addEditor(@RequestParam long post_id, @RequestParam long user_id, Model model) {
+
+        User user = userRepository.findById(user_id).get();
+        Post post = postRepository.findById(post_id).get();
+
+        post.getUserEditorsList().add(user);
+
+        postRepository.save(post);
+
+        return "redirect:/post/goEditorPage?id=" + post_id;
+    }
+
+    @PostMapping("/post/deleteEditor")
+    public String deleteEditor(@RequestParam long post_id, @RequestParam long user_id, Model model, HttpSession session) {
+
+        User user = userRepository.findById(user_id).get();
+        Post post = postRepository.findById(post_id).get();
+
+        post.getUserEditorsList().remove(user);
+
+        postRepository.save(post);
+
+        return "redirect:/post/goEditorPage?id=" + post_id;
     }
 
 }

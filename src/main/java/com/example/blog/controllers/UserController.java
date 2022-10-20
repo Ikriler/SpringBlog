@@ -2,6 +2,7 @@ package com.example.blog.controllers;
 
 import com.example.blog.models.Post;
 import com.example.blog.models.User;
+import com.example.blog.repositories.ContactsRepository;
 import com.example.blog.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,7 +28,10 @@ import java.util.*;
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private ContactsRepository contactsRepository;
 
 
     @PostMapping("/user-create")
@@ -115,6 +119,9 @@ public class UserController {
             model.addAttribute("auth", false);
         }
 
+        if(user.getContacts() != null) {
+            model.addAttribute("contacts", user.getContacts());
+        }
 
         return "profile";
     }

@@ -49,6 +49,14 @@
                 </form>
             </div>
         </div>
+        <div class="col-sm-2">
+            <div th:if="${allowDelete}">
+                <form th:action="@{/post/goEditorPage}" method="get">
+                    <input type="hidden" th:value="${post.id}" name="id">
+                    <input value="Добавить редактора" type="submit" class="btn btn-primary">
+                </form>
+            </div>
+        </div>
     </div>
 
     <div class="mt-3">

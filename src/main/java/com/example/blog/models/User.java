@@ -25,6 +25,7 @@ public class User {
     private String password;
 
 
+    @NotNull(message = "Поле не должно быть пустым")
     @Positive(message = "Возраст не может быть отрицательным")
     @Min(value = 15, message = "Вам должно быть не менее 15 лет")
     @Max(value = 200, message = "Вы должно быть не более 200 лет")
@@ -33,6 +34,7 @@ public class User {
     @DecimalMin(value = "0.0", message = "Рост должен быть больше 0")
     @DecimalMax(value = "200.0", message = "Рост должен быть меньше 200")
     @Positive(message = "Рост не может быть отрицательным")
+    @NotNull(message = "Поле не должно быть пустым")
     private Double growth;
 
 
@@ -43,6 +45,14 @@ public class User {
     private Date bd_date;
 
     private Boolean admin;
+
+    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "contacts_id")
+    private Contacts contacts;
+
+    @ManyToMany
+    @JoinTable(name = "editors", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
+    public List<Post> postEditorsList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> commentList;
@@ -132,6 +142,22 @@ public class User {
 
     public void setPostList(List<Post> postList) {
         this.postList = postList;
+    }
+
+    public List<Post> getPostEditorsList() {
+        return postEditorsList;
+    }
+
+    public void setPostEditorsList(List<Post> postEditorsList) {
+        this.postEditorsList = postEditorsList;
+    }
+
+    public Contacts getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(Contacts contacts) {
+        this.contacts = contacts;
     }
 
 }

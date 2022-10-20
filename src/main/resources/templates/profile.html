@@ -31,11 +31,12 @@
     </div>
 </nav>
 <content class="container d-flex flex-column align-items-center mt-4">
+    <p class="display-5 p-4">Профиль</p>
     <div>
-        <p th:text="${user.login}"></p>
-        <label>Возраст:</label><span th:text="${user.age}"></span><br>
-        <label>Рост:</label><span th:text="${user.growth}"></span><br>
-        <label>Дата рождения:</label><span th:text="${user.bd_date}"></span><br>
+        <p class="h3" th:text="${user.login}"></p>
+        <label class="h3">Возраст: </label><span class="h3" th:text="${user.age}"></span><br>
+        <label class="h3">Рост: </label><span class="h3" th:text="${user.growth}"></span><br>
+        <label class="h3">Дата рождения: </label><span class="h3" th:text="${user.bd_date}"></span><br>
     </div>
     <div th:if="${current_user}" class="container mt-4 row d-flex flex-row align-items-center justify-content-center">
         <div class="col-sm-4"></div>
@@ -48,6 +49,34 @@
             <input type="submit" value="Удалить" class="btn btn-primary">
         </form>
         <div class="col-sm-4"></div>
+    </div>
+    <div th:if="${contacts == null && current_user}">
+        <div class="container mt-10 column d-flex flex-column align-items-center justify-content-center">
+            <form action="/contacts/goAddPage" method="post" class="form column d-flex flex-column align-items-center">
+                <p class="display-5 p-4">Контактная информация</p>
+                <input type="hidden" th:value="${user.id}" name="id">
+                <input type="submit" value="Добавить контактную информацию" class="btn btn-primary">
+            </form>
+        </div>
+    </div>
+    <div th:if="${contacts != null}" class="container d-flex flex-column align-items-center">
+        <p class="display-5 p-4">Контактная информация</p>
+        <div>
+            <label class="h3">Email: </label><span class="h3" th:text="${contacts.email}"></span><br>
+            <label class="h3">Телефон: </label><span class="h3" th:text="${contacts.phoneNumber}"></span><br>
+        </div>
+        <div th:if="${current_user}" class="container mt-4 row d-flex flex-row align-items-center justify-content-center">
+            <div class="col-sm-4"></div>
+            <form action="/contacts/edit-page" method="post" class="col-sm-2">
+                <input type="hidden" th:value="${user.id}" name="id">
+                <input type="submit" value="Редактировать" class="btn btn-primary">
+            </form>
+            <form action="/contacts/delete" method="post" class="col-sm-1 ms-4">
+                <input type="hidden" th:value="${user.id}" name="id">
+                <input type="submit" value="Удалить" class="btn btn-primary">
+            </form>
+            <div class="col-sm-4"></div>
+        </div>
     </div>
 </content>
 <script th:src="@{/bootstrap/bootstrap.js}"></script>

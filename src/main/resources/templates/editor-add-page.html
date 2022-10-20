@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/bootstrap.css}">
+</head>
+<body>
+<nav class="nav navbar-expand-lg navbar-dark bg-dark p-3">
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item ms-3">
+                <a class="nav-link" href="/">Главная</a>
+            </li>
+            <li class="nav-item ms-3" th:if="${auth}">
+                <a class="nav-link" href="/user/list">Пользователи</a>
+            </li>
+            <li class="nav-item ms-3" th:if="${auth}">
+                <a class="nav-link" href="/add-post">Добавить статью</a>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <div th:if="${auth}">
+            <a href="/logout" class="btn btn-primary">Выйти</a>
+        </div>
+        <div th:unless="${auth}">
+            <a href="/login" class="btn btn-primary">Войти</a>
+            <a href="/register-form" class="btn btn-primary ms-2">Регистрация</a>
+        </div>
+    </div>
+</nav>
+
+<content class="container d-flex flex-column align-items-center mt-4">
+    <form class="form-horizontal col-sm-8">
+        <div class="form-group row d-flex flex-row align-items-center justify-content-center">
+            <input type="hidden" th:value="${post_id}" name="post_id">
+            <div class="col-sm-4">
+                <select name="user_id" th:if="${users.size() != 0}" class="form-select">
+                    <div th:each="user: ${users}">
+                        <option th:text="${user.login}" th:value="${user.id}" selected></option>
+                    </div>
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <input type="submit" th:if="${users.size() != 0}" value="Добавить" formaction="/post/addEditor"
+                       formmethod="post" class="btn btn-primary mt-2">
+            </div>
+        </div>
+    </form>
+    <p class="display-5 p-4" th:if="${editors.size() != 0}">Список редакторов</p>
+</content>
+<content class="container d-flex flex-column align-items-right mt-4 col-sm-5">
+    <div th:each="editor : ${editors}">
+        <form class="from-horizontal col-form-label">
+            <div class="form-group row d-flex flex-row align-items-center justify-content-center">
+                <div class="col-sm-10 col-form-label align-items-center justify-content-center">
+                    <label class="form-check-label"><a th:href="@{/profile?id={id}(id=${editor.id})}" class="h4" th:text="${editor.login}"></a></label>
+                </div>
+                <input type="hidden" th:value="${editor.id}" name="user_id">
+                <input type="hidden" th:value="${post_id}" name="post_id">
+                <div class="col-sm-2">
+                    <input type="submit" value="Удалить" formaction="/post/deleteEditor" formmethod="post"
+                           class="btn btn-danger mt-2">
+                </div>
+            </div>
+        </form>
+    </div>
+</content>
+
+<script th:src="@{/bootstrap/bootstrap.js}"></script>
+</body>
+</html>

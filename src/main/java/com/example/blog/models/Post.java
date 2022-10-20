@@ -27,6 +27,10 @@ public class Post {
     @JoinColumn(name="user_id", referencedColumnName = "id")
     private User user;
 
+    @ManyToMany
+    @JoinTable(name = "editors", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    public List<User> userEditorsList;
+
     public Post(String title, String anons, String full_text, User user) {
         this.title = title;
         this.anons = anons;
@@ -92,6 +96,14 @@ public class Post {
 
     public void setViews(int views) {
         this.views = views;
+    }
+
+    public List<User> getUserEditorsList() {
+        return userEditorsList;
+    }
+
+    public void setUserEditorsList(List<User> userEditorsList) {
+        this.userEditorsList = userEditorsList;
     }
 
 }

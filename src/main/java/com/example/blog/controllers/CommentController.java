@@ -95,7 +95,7 @@ public class CommentController {
                               Model model) {
 
         if(bindingResult.hasErrors()) {
-            model.addAttribute("comment_id", comment.getId());
+            //model.addAttribute("comment_id", comment.getId());
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if(auth != null && auth.getName() != "anonymousUser") {
                 model.addAttribute("auth", true);
