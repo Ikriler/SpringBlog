@@ -61,12 +61,13 @@ public class ContactsController {
 
         Boolean haveErrors = false;
 
-        if(contactsRepository.findByEmail(contacts.getEmail()) != null && contactsRepository.findByEmail(contacts.getEmail()).getId() != contacts.getId()){
+        if(contactsRepository.findByEmail(contacts.getEmail()) != null && !contactsRepository.findByEmail(contacts.getEmail()).getId().equals(contacts.getId())){
             model.addAttribute("email_errors", "Данный email уже существует");
             haveErrors = true;
         }
 
-        if(contactsRepository.findByPhoneNumber(contacts.getPhoneNumber()) != null && contactsRepository.findByPhoneNumber(contacts.getPhoneNumber()).getId() != contacts.getId()){
+
+        if(contactsRepository.findByPhoneNumber(contacts.getPhoneNumber()) != null && !contactsRepository.findByPhoneNumber(contacts.getPhoneNumber()).getId().equals(contacts.getId())){
             model.addAttribute("phoneNumber_errors", "Данный телефон уже существует");
             haveErrors = true;
         }
@@ -129,12 +130,13 @@ public class ContactsController {
 
         Boolean haveErrors = false;
 
-        if(contactsRepository.findByEmail(contacts.getEmail()) != null && contactsRepository.findByEmail(contacts.getEmail()).getId() != contacts.getId()){
+        if(contactsRepository.findByEmail(contacts.getEmail()) != null && !contactsRepository.findByEmail(contacts.getEmail()).getId().equals(contacts.getId())){
             model.addAttribute("email_errors", "Данный email уже существует");
             haveErrors = true;
         }
 
-        if(contactsRepository.findByPhoneNumber(contacts.getPhoneNumber()) != null && contactsRepository.findByPhoneNumber(contacts.getPhoneNumber()).getId() != contacts.getId()){
+
+        if(contactsRepository.findByPhoneNumber(contacts.getPhoneNumber()) != null && !contactsRepository.findByPhoneNumber(contacts.getPhoneNumber()).getId().equals(contacts.getId())){
             model.addAttribute("phoneNumber_errors", "Данный телефон уже существует");
             haveErrors = true;
         }
