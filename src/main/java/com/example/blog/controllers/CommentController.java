@@ -6,6 +6,7 @@ import com.example.blog.models.User;
 import com.example.blog.repositories.CommentRepository;
 import com.example.blog.repositories.PostRepository;
 import com.example.blog.repositories.UserRepository;
+import com.example.blog.services.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,8 @@ public class CommentController {
     private UserRepository userRepository;
     @Autowired
     private PostRepository postRepository;
+
+    private AuthService authService = new AuthService();
 
     @PostMapping("/create-comment")
     public String createComment(@ModelAttribute("comment") @Valid Comment comment, BindingResult bindingResult, @RequestParam long post_id, Model model, HttpSession session){
@@ -74,18 +77,11 @@ public class CommentController {
     public String goCommentEdit(@RequestParam long comment_id,
                                 Model model) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        }
-        else {
-            model.addAttribute("auth", false);
-        }
+        authService.authModelAdvice(model, userRepository);
 
         Comment comment = commentRepository.findById(comment_id).get();
 
         model.addAttribute("comment", comment);
-
 
         return "comment-edit";
     }
@@ -95,14 +91,7 @@ public class CommentController {
                               Model model) {
 
         if(bindingResult.hasErrors()) {
-            //model.addAttribute("comment_id", comment.getId());
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if(auth != null && auth.getName() != "anonymousUser") {
-                model.addAttribute("auth", true);
-            }
-            else {
-                model.addAttribute("auth", false);
-            }
+            authService.authModelAdvice(model, userRepository);
             return "comment-edit";
         }
 

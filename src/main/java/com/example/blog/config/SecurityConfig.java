@@ -1,21 +1,13 @@
-package com.example.blog;
+package com.example.blog.config;
 
-import com.example.blog.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.net.http.HttpClient;
 
 @Configuration
 public class SecurityConfig {
@@ -34,6 +26,8 @@ public class SecurityConfig {
                 .antMatchers("/resources/**").permitAll()
                 .antMatchers("/bootstrap/bootstrap.css").permitAll()
                 .antMatchers("/list").permitAll()
+                .antMatchers("/permission/**").hasRole("Admin")
+                .antMatchers("/create-comment").hasAnyRole("Admin", "User")
                 .anyRequest().authenticated()
                 .and()
                 .rememberMe()
@@ -41,13 +35,6 @@ public class SecurityConfig {
                 .formLogin()
                 .defaultSuccessUrl("/");
         return http.build();
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) ->     web
-                .ignoring()
-                .antMatchers("/resources/**", "/static/**","/static/bootstrap/**", "/css/**", "/js/**", "/img/**", "/icon/**", "/user-create");
     }
 
     @Bean
@@ -61,12 +48,10 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
         authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(customPasswordEncoder);
         return authProvider;
     }
-
 
 
 }

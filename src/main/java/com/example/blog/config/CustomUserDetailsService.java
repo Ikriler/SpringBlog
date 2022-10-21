@@ -1,4 +1,4 @@
-package com.example.blog;
+package com.example.blog.config;
 
 import com.example.blog.models.User;
 import com.example.blog.repositories.UserRepository;
@@ -16,10 +16,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByLogin(username);
+
+        String role = user.getAdmin() == true ? "Admin" : "User";
+
         UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
                 .username(user.getLogin())
                 .password(user.getPassword())
-                .roles("USER")
+                .roles(role)
                 .build();
         return userDetails;
     }

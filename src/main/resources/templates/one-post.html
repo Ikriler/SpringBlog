@@ -18,6 +18,9 @@
             <li class="nav-item ms-3" th:if="${auth}">
                 <a class="nav-link" href="/add-post">Добавить статью</a>
             </li>
+            <li class="nav-item ms-3" th:if="${admin != null}">
+                <a class="nav-link" href="/permission/page">Права пользователей</a>
+            </li>
         </ul>
     </div>
     <div>
@@ -42,7 +45,7 @@
             </div>
         </div>
         <div class="col-sm-2">
-            <div th:if="${allowDelete}">
+            <div th:if="${allowDelete || admin != null}">
                 <form th:action="@{/post/delete}" method="post">
                     <input type="hidden" th:value="${post.id}" name="id">
                     <input value="Удалить" type="submit" class="btn btn-primary">

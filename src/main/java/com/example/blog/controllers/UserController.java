@@ -1,27 +1,19 @@
 package com.example.blog.controllers;
 
-import com.example.blog.models.Post;
 import com.example.blog.models.User;
 import com.example.blog.repositories.ContactsRepository;
 import com.example.blog.repositories.UserRepository;
+import com.example.blog.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
-import javax.validation.constraints.Past;
-import java.net.PasswordAuthentication;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Controller
@@ -33,11 +25,13 @@ public class UserController {
     @Autowired
     private ContactsRepository contactsRepository;
 
+    private AuthService authService = new AuthService();
+
 
     @PostMapping("/user-create")
     public String create(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
                          Model model) {
-
+        authService.authModelAdvice(model, userRepository);
         List<String> loginErrors = new ArrayList<>();
 
         if(userRepository.findByLogin(user.getLogin()) != null) {
@@ -69,7 +63,7 @@ public class UserController {
 
     @GetMapping("/user/list")
     public String list(@RequestParam(required = false) String login, @RequestParam(required = false) Boolean accurate, Model model) {
-
+        authService.authModelAdvice(model, userRepository);
         Iterable<User> users = new ArrayList<User>();
 
         if (login != null && login != "") {
@@ -98,6 +92,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public String profile(@RequestParam long id, Model model) {
+        authService.authModelAdvice(model, userRepository);
         if (!userRepository.existsById(id)) {
             return "redirect:/";
         }
@@ -138,6 +133,7 @@ public class UserController {
 
     @PostMapping("user/edit-page")
     public String goEditPage(@RequestParam long id, Model model) {
+        authService.authModelAdvice(model, userRepository);
         if (!userRepository.existsById(id)) {
             return "redirect:/";
         }
@@ -149,12 +145,7 @@ public class UserController {
 
         String outDate = dt1.format(date);
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        } else {
-            model.addAttribute("auth", false);
-        }
+        authService.authModelAdvice(model, userRepository);
 
         model.addAttribute("user", user);
         model.addAttribute("outDate", outDate);
@@ -166,12 +157,7 @@ public class UserController {
     public String userEdit(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
                            Model model) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        } else {
-            model.addAttribute("auth", false);
-        }
+        authService.authModelAdvice(model, userRepository);
 
         SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
 

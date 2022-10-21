@@ -4,24 +4,15 @@ import com.example.blog.models.Contacts;
 import com.example.blog.models.User;
 import com.example.blog.repositories.ContactsRepository;
 import com.example.blog.repositories.UserRepository;
+import com.example.blog.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.Banner;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.swing.text.StyledEditorKit;
 import javax.validation.Valid;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 @Controller
 public class ContactsController {
@@ -32,14 +23,11 @@ public class ContactsController {
     @Autowired
     private ContactsRepository contactsRepository;
 
+    private AuthService authService = new AuthService();
+
     @PostMapping("/contacts/goAddPage")
     public String goAddPage(@RequestParam long id, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        } else {
-            model.addAttribute("auth", false);
-        }
+        authService.authModelAdvice(model, userRepository);
         User user = userRepository.findById(id).get();
         Contacts contacts = new Contacts();
         contacts.setUser(user);
@@ -51,13 +39,7 @@ public class ContactsController {
     @PostMapping("/contacts/create")
     public String createContacts(@ModelAttribute("contacts") @Valid Contacts contacts, BindingResult bindingResult, Model model) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        } else {
-            model.addAttribute("auth", false);
-        }
-
+        authService.authModelAdvice(model, userRepository);
 
         Boolean haveErrors = false;
 
@@ -71,7 +53,6 @@ public class ContactsController {
             model.addAttribute("phoneNumber_errors", "Данный телефон уже существует");
             haveErrors = true;
         }
-
 
         if(bindingResult.hasErrors() || haveErrors) {
             return "contacts-add";
@@ -105,12 +86,7 @@ public class ContactsController {
     @PostMapping("/contacts/edit-page")
     public String goContactsEditPage(@RequestParam long id, Model model)  {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        } else {
-            model.addAttribute("auth", false);
-        }
+        authService.authModelAdvice(model, userRepository);
 
         User user = userRepository.findById(id).get();
 
@@ -121,12 +97,7 @@ public class ContactsController {
 
     @PostMapping("/contacts/edit")
     public String contactsEdit(@ModelAttribute("contacts") @Valid Contacts contacts, BindingResult bindingResult, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        } else {
-            model.addAttribute("auth", false);
-        }
+        authService.authModelAdvice(model, userRepository);
 
         Boolean haveErrors = false;
 

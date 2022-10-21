@@ -6,6 +6,7 @@ import com.example.blog.models.User;
 import com.example.blog.repositories.CommentRepository;
 import com.example.blog.repositories.PostRepository;
 import com.example.blog.repositories.UserRepository;
+import com.example.blog.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
@@ -37,17 +38,14 @@ public class PostController {
     @Autowired
     private CommentRepository commentRepository;
 
+    private AuthService authService = new AuthService();
+
     @PostMapping("/post-create")
     public String postCreate(@ModelAttribute("post") @Valid Post post, BindingResult bindingResult, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByLogin(auth.getName());
 
-        if (auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        } else {
-            model.addAttribute("auth", false);
-        }
-
+        authService.authModelAdvice(model, userRepository);
 
         if(bindingResult.hasErrors()) {
             model.addAttribute("post", post);
@@ -64,7 +62,7 @@ public class PostController {
     @GetMapping("/list")
     public String getOnePost(@RequestParam(required = false) String text, @RequestParam(required = false) Boolean accurate, @RequestParam long id, Model model, HttpSession session) {
         Post post = postRepository.findById(id).get();
-
+        authService.authModelAdvice(model, userRepository);
         User user = new User();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth != null && auth.getName() != "anonymousUser") {
@@ -128,13 +126,7 @@ public class PostController {
 
 
         if(bindingResult.hasErrors()) {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if(auth != null && auth.getName() != "anonymousUser") {
-                model.addAttribute("auth", true);
-            }
-            else {
-                model.addAttribute("auth", false);
-            }
+            authService.authModelAdvice(model, userRepository);
             return "post-edit";
         }
 
@@ -155,13 +147,7 @@ public class PostController {
     public String goEditPost(@RequestParam long id,
                            Model model) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        }
-        else {
-            model.addAttribute("auth", false);
-        }
+        authService.authModelAdvice(model, userRepository);
 
         Post post = postRepository.findById(id).get();
 
@@ -183,12 +169,7 @@ public class PostController {
     @GetMapping("/post/goEditorPage")
     public String goEditorPage(@RequestParam long id, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        }
-        else {
-            model.addAttribute("auth", false);
-        }
+        authService.authModelAdvice(model, userRepository);
 
         if(!postRepository.existsById(id) || !postRepository.findById(id).get().getUser().getLogin().equals(auth.getName())) {
             return "redirect:/login";
@@ -197,7 +178,6 @@ public class PostController {
         Post post = postRepository.findById(id).get();
 
         User currentUser = userRepository.findByLogin(auth.getName());
-
 
         List<User> editors = post.getUserEditorsList();
         List<User> users = (List<User>) userRepository.findAll();
@@ -236,6 +216,13 @@ public class PostController {
         postRepository.save(post);
 
         return "redirect:/post/goEditorPage?id=" + post_id;
+    }
+
+    @GetMapping("/add-post")
+    public String goPostAddForm(Model model) {
+        authService.authModelAdvice(model, userRepository);
+        model.addAttribute("post", new Post());
+        return "post-add-form";
     }
 
 }

@@ -1,39 +1,32 @@
 package com.example.blog.controllers;
-
 import com.example.blog.models.Post;
 import com.example.blog.models.User;
 import com.example.blog.repositories.PostRepository;
+import com.example.blog.repositories.UserRepository;
+import com.example.blog.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
+
 
 @Controller
 public class BlogController {
 
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+
+    private AuthService authService = new AuthService();
 
     @GetMapping("/")
     public String index(@RequestParam(required = false) String title, @RequestParam(required = false) Boolean accurate, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        } else {
-            model.addAttribute("auth", false);
-        }
+        authService.authModelAdvice(model, userRepository);
 
         Iterable<Post> posts = new ArrayList<Post>();
 
@@ -53,13 +46,7 @@ public class BlogController {
 
     @GetMapping("/register-form")
     public String registerForm(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        } else {
-            model.addAttribute("auth", false);
-        }
-
+        authService.authModelAdvice(model, userRepository);
         User user = new User();
         user.setBd_date(new Date());
         user.setGrowth(170.0);
@@ -67,17 +54,6 @@ public class BlogController {
         return "register-form";
     }
 
-    @GetMapping("/add-post")
-    public String goPostAddForm(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != "anonymousUser") {
-            model.addAttribute("auth", true);
-        } else {
-            model.addAttribute("auth", false);
-        }
-        model.addAttribute("post", new Post());
-        return "post-add-form";
-    }
 
 
 }
