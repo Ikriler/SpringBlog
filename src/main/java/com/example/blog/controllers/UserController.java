@@ -7,6 +7,7 @@ import com.example.blog.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -54,7 +55,9 @@ public class UserController {
             return "register-form";
         }
 
-        User userDB = new User(user.getLogin(), user.getPassword(), user.getAge(), user.getGrowth(), user.getBd_date(), false);
+        String cryptPass = new BCryptPasswordEncoder().encode(user.getPassword());
+
+        User userDB = new User(user.getLogin(), cryptPass, user.getAge(), user.getGrowth(), user.getBd_date(), false);
 
         userRepository.save(userDB);
 

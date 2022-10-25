@@ -21,7 +21,7 @@ public class User {
     private String login;
 
     @NotBlank(message = "Поле не должно быть пустым")
-    @Size(min = 6, max = 20, message = "Поле должно быть размером от 6 до 20 символов")
+    //@Size(min = 6, max = 20, message = "Поле должно быть размером от 6 до 20 символов")
     private String password;
 
 
